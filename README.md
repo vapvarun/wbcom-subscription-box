@@ -64,21 +64,3 @@ This plugin is distributed in the hope that it will be useful, but WITHOUT ANY W
 
 You should have received a copy of the GNU General Public License along with this plugin; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-## Instructions for Developer
-
-1. **Deploy the Code:** Implement the solution on the provided [TasteWP environment](https://tastewp.com/create/NMS/7.4/6.6.1/tastewp-default/twentytwentythree) and share the login details after the code is added.
-2. **Share the Code:** Upload the final code to a public GitHub repository or Gist and provide the link.
-
-## Submission Requirements
-
-- Provide a GitHub repository link with the project files.
-- Include a README file with instructions on how to set up the project.
-- Provide a brief explanation of the approach taken for each task.
-- Ensure that the code is well-documented and follows WordPress and WooCommerce coding standards.
-
-## Evaluation Criteria
-
-- **Functionality:** Completeness and correctness of the implemented features.
-- **Code Quality:** Adherence to coding standards, readability, and documentation.
-- **Performance:** Efficiency of the implemented solutions and impact on site performance.
-- **Creativity:** Innovative approaches and problem-solving skills demonstrated in the assignment.
