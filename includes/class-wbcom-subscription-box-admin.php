@@ -11,7 +11,6 @@ class Wbcom_Subscription_Box_Admin
     {
         add_action('woocommerce_product_options_general_product_data', array($this, 'subscription_box_custom_fields'));
         add_action('woocommerce_process_product_meta', array($this, 'save_subscription_box_custom_fields'));
-        add_action('woocommerce_single_product_summary', array($this, 'display_subscription_box_custom_fields'), 25);
     }
 
     public function subscription_box_custom_fields()
@@ -24,7 +23,7 @@ class Wbcom_Subscription_Box_Admin
         woocommerce_wp_select(
             array(
                 'id'          => 'subscription_frequency',
-                'label'       => __('Subscription Frequency', 'wbcom-subscription-box'),
+                'label'       => __('Default Subscription Frequency', 'wbcom-subscription-box'),
                 'options'     => array(
                     'monthly'   => __('Monthly', 'wbcom-subscription-box'),
                     'quarterly' => __('Quarterly', 'wbcom-subscription-box'),
@@ -79,24 +78,6 @@ class Wbcom_Subscription_Box_Admin
         $subscription_price = isset($_POST['subscription_price']) ? sanitize_text_field($_POST['subscription_price']) : '';
         if (!empty($subscription_price)) {
             update_post_meta($post_id, 'subscription_price', esc_attr($subscription_price));
-        }
-    }
-
-    public function display_subscription_box_custom_fields()
-    {
-        global $post;
-
-        $product = wc_get_product($post->ID);
-        $subscription_frequency = get_post_meta($post->ID, 'subscription_frequency', true);
-        $number_of_items = get_post_meta($post->ID, 'number_of_items', true);
-        $subscription_price = get_post_meta($post->ID, 'subscription_price', true);
-
-        if ($product->get_type() == 'subscription_box') {
-            echo '<div class="subscription-box-details">';
-            echo '<p>' . __('Subscription Frequency: ', 'wbcom-subscription-box') . $subscription_frequency . '</p>';
-            echo '<p>' . __('Number of Items in Box: ', 'wbcom-subscription-box') . $number_of_items . '</p>';
-            echo '<p>' . __('Subscription Price: ', 'wbcom-subscription-box') . $subscription_price . '</p>';
-            echo '</div>';
         }
     }
 }

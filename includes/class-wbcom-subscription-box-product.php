@@ -21,6 +21,12 @@ class Wbcom_Subscription_Box_Product
 
         // Ensure the Add to Cart button is displayed
         add_action('woocommerce_single_product_summary', array($this, 'display_add_to_cart_button'), 30);
+
+        // Add subscription frequency dropdown
+        add_action('woocommerce_before_add_to_cart_button', array($this, 'subscription_box_frequency_dropdown'));
+        add_filter('woocommerce_add_cart_item_data', array($this, 'add_cart_item_data'), 10, 2);
+        add_filter('woocommerce_get_item_data', array($this, 'display_cart_item_data'), 10, 2);
+        add_action('woocommerce_checkout_create_order_line_item', array($this, 'save_order_item_meta'), 10, 4);
     }
 
     public function register_subscription_box_product_type()
@@ -54,8 +60,8 @@ class Wbcom_Subscription_Box_Product
     {
         foreach ($cart_object->get_cart() as $cart_item_key => $cart_item) {
             if ($cart_item['data']->get_type() == 'subscription_box') {
-                $subscription_frequency = get_post_meta($cart_item['product_id'], 'subscription_frequency', true);
-                $subscription_price = get_post_meta($cart_item['product_id'], 'subscription_price', true);
+                $subscription_frequency = isset($cart_item['subscription_frequency']) ? $cart_item['subscription_frequency'] : 'monthly';
+                $subscription_price = $cart_item['data']->get_meta('subscription_price');
 
                 if ($subscription_frequency && $subscription_price) {
                     switch ($subscription_frequency) {
@@ -63,10 +69,10 @@ class Wbcom_Subscription_Box_Product
                             $cart_item['data']->set_price($subscription_price);
                             break;
                         case 'quarterly':
-                            $cart_item['data']->set_price($subscription_price);
+                            $cart_item['data']->set_price($subscription_price * 3);
                             break;
                         case 'annually':
-                            $cart_item['data']->set_price($subscription_price);
+                            $cart_item['data']->set_price($subscription_price * 12);
                             break;
                     }
                 }
@@ -87,6 +93,51 @@ class Wbcom_Subscription_Box_Product
         global $product;
         if ($product->get_type() == 'subscription_box') {
             woocommerce_simple_add_to_cart();
+        }
+    }
+
+    public function subscription_box_frequency_dropdown()
+    {
+        global $product;
+        if ($product->get_type() == 'subscription_box') {
+            $options = array(
+                'monthly'   => __('Monthly', 'wbcom-subscription-box'),
+                'quarterly' => __('Quarterly', 'wbcom-subscription-box'),
+                'annually'  => __('Annually', 'wbcom-subscription-box'),
+            );
+            echo '<div class="subscription-frequency">
+                    <label for="subscription_frequency">' . __('Subscription Frequency', 'wbcom-subscription-box') . '</label>
+                    <select name="subscription_frequency" id="subscription_frequency">';
+            foreach ($options as $key => $value) {
+                echo '<option value="' . esc_attr($key) . '">' . esc_html($value) . '</option>';
+            }
+            echo '</select></div>';
+        }
+    }
+
+    public function add_cart_item_data($cart_item_data, $product_id)
+    {
+        if (isset($_POST['subscription_frequency'])) {
+            $cart_item_data['subscription_frequency'] = sanitize_text_field($_POST['subscription_frequency']);
+        }
+        return $cart_item_data;
+    }
+
+    public function display_cart_item_data($item_data, $cart_item)
+    {
+        if (isset($cart_item['subscription_frequency'])) {
+            $item_data[] = array(
+                'key'   => __('Subscription Frequency', 'wbcom-subscription-box'),
+                'value' => wc_clean($cart_item['subscription_frequency']),
+            );
+        }
+        return $item_data;
+    }
+
+    public function save_order_item_meta($item, $cart_item_key, $values, $order)
+    {
+        if (isset($values['subscription_frequency'])) {
+            $item->add_meta_data(__('Subscription Frequency', 'wbcom-subscription-box'), $values['subscription_frequency'], true);
         }
     }
 }
