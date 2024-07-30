@@ -18,6 +18,9 @@ class Wbcom_Subscription_Box_Product
         add_filter('woocommerce_is_purchasable', array($this, 'woocommerce_is_purchasable'), 10, 2);
         add_action('woocommerce_before_calculate_totals', array($this, 'adjust_subscription_box_price'));
         add_action('woocommerce_process_product_meta', array($this, 'save_product_type'));
+
+        // Ensure the Add to Cart button is displayed
+        add_action('woocommerce_single_product_summary', array($this, 'display_add_to_cart_button'), 30);
     }
 
     public function register_subscription_box_product_type()
@@ -60,10 +63,10 @@ class Wbcom_Subscription_Box_Product
                             $cart_item['data']->set_price($subscription_price);
                             break;
                         case 'quarterly':
-                            $cart_item['data']->set_price($subscription_price * 3);
+                            $cart_item['data']->set_price($subscription_price);
                             break;
                         case 'annually':
-                            $cart_item['data']->set_price($subscription_price * 12);
+                            $cart_item['data']->set_price($subscription_price);
                             break;
                     }
                 }
@@ -76,6 +79,14 @@ class Wbcom_Subscription_Box_Product
         $product = wc_get_product($post_id);
         if (isset($_POST['product-type']) && $_POST['product-type'] === 'subscription_box') {
             update_post_meta($post_id, '_product_type', 'subscription_box');
+        }
+    }
+
+    public function display_add_to_cart_button()
+    {
+        global $product;
+        if ($product->get_type() == 'subscription_box') {
+            woocommerce_simple_add_to_cart();
         }
     }
 }

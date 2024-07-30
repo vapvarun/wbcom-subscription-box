@@ -22,14 +22,19 @@ class WC_Product_Subscription_Box extends WC_Product
                 case 'monthly':
                     return $subscription_price;
                 case 'quarterly':
-                    return $subscription_price * 3;
+                    return $subscription_price;
                 case 'annually':
-                    return $subscription_price * 12;
+                    return $subscription_price;
                 default:
                     return parent::get_price($context);
             }
         }
 
         return parent::get_price($context);
+    }
+
+    public function is_purchasable()
+    {
+        return true;
     }
 }
