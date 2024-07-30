@@ -66,17 +66,20 @@ class Wbcom_Subscription_Box_Admin
 
     public function save_subscription_box_custom_fields($post_id)
     {
-        $subscription_frequency = $_POST['subscription_frequency'];
-        if (!empty($subscription_frequency))
+        $subscription_frequency = isset($_POST['subscription_frequency']) ? sanitize_text_field($_POST['subscription_frequency']) : '';
+        if (!empty($subscription_frequency)) {
             update_post_meta($post_id, 'subscription_frequency', esc_attr($subscription_frequency));
+        }
 
-        $number_of_items = $_POST['number_of_items'];
-        if (!empty($number_of_items))
+        $number_of_items = isset($_POST['number_of_items']) ? sanitize_text_field($_POST['number_of_items']) : '';
+        if (!empty($number_of_items)) {
             update_post_meta($post_id, 'number_of_items', esc_attr($number_of_items));
+        }
 
-        $subscription_price = $_POST['subscription_price'];
-        if (!empty($subscription_price))
+        $subscription_price = isset($_POST['subscription_price']) ? sanitize_text_field($_POST['subscription_price']) : '';
+        if (!empty($subscription_price)) {
             update_post_meta($post_id, 'subscription_price', esc_attr($subscription_price));
+        }
     }
 
     public function display_subscription_box_custom_fields()
